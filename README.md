@@ -36,7 +36,7 @@ DocuMind uses RAG to answer questions from crawled developer documentation. Ask 
 | Frontend | React 18 |
 | Backend | Express.js |
 | Database | Supabase (PostgreSQL + pgvector) |
-| Auth | Supabase Auth |
+| Auth | Express (JWT) |
 | LLM | Gemini 1.5 Flash |
 | Embedding | Gemini text-embedding-004 |
 | Crawler | Playwright |
