@@ -1,8 +1,8 @@
-# Ignore everything
-*
-
 # Except README.md
 !README.md
+
+# Keep repository instructions tracked despite the catch-all rule.
+!AGENTS.md
 
 # Except .gitignore (so it stays tracked)
 !.gitignore
