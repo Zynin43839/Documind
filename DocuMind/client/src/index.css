@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* SchemaBlue Design System */
+:root {
+  --black: #000000;
+  --white: #FFFFFF;
+  --blue: #0000FF;
+  --green: #00CC66;
+  --orange: #FF6600;
+}
+
+body {
+  margin: 0;
+  font-family: 'Sarabun', sans-serif;
+  background: var(--white);
+  color: var(--black);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Kanit', sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+}

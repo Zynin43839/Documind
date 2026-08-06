@@ -1,8 +1,8 @@
+# Ignore everything
+*
+
 # Except README.md
 !README.md
-
-# Keep repository instructions tracked despite the catch-all rule.
-!AGENTS.md
 
 # Except .gitignore (so it stays tracked)
 !.gitignore
@@ -14,21 +14,24 @@
 .env.production
 .env.*.local
 
-# Ignore node_modules
-node_modules/
-
-# Ignore logs
-*.log
-npm-debug.log*
-
-# Ignore build output
+# Build output
 build/
 dist/
 
-# Ignore IDE
+# IDE
 .vscode/
 .idea/
 
-# Ignore OS
+# OS
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Planning & Design files (not for git)
+Mydoc/
+
+# Test coverage
+coverage/
