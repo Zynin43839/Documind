@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DocuMind</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="chat-page">
+    <aside class="sidebar" aria-label="Chat history">
+      <div class="sidebar-top">
+        <a class="brand" href="chat.html"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="3" y="4" width="10" height="9" rx="2"/><rect x="19" y="4" width="10" height="9" rx="2"/><rect x="11" y="20" width="10" height="9" rx="2"/><path d="M13 8.5h6M8 13v7m16-7v7m-11 4.5h6"/></svg></span><span>DocuMind</span></a>
+        <button class="new-chat" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> New chat</button>
+      </div>
+      <nav class="history-nav" aria-label="Previous conversations">
+        <section><h2>Today</h2><a class="conversation active" href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.3 8.3 0 0 1-3.4-.8L4 19.5l1.3-4A7.5 7.5 0 1 1 20 11.5Z"/></svg><span>Rate limiting for API clients</span></a><a class="conversation" href="#"><span>Postgres migration safety</span></a></section>
+        <section><h2>Yesterday</h2><a class="conversation" href="#"><span>Webhook retry semantics</span></a><a class="conversation" href="#"><span>Configure SSO with Okta</span></a></section>
+        <section><h2>Previous 7 days</h2><a class="conversation" href="#"><span>SDK pagination examples</span></a><a class="conversation" href="#"><span>Production deploy checklist</span></a></section>
+      </nav>
+      <div class="account"><span class="avatar">AR</span><span class="account-name">Alex Rivera<small>Acme Systems</small></span><button class="icon-button" type="button" aria-label="Sign out" title="Sign out"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5M14 8l4 4-4 4m4-4H9"/></svg></button></div>
+    </aside>
+    <div class="chat-workspace">
+      <header class="chat-header"><button class="icon-button menu-button" type="button" aria-label="Open conversation history" title="Open history"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><div><p class="eyebrow">DOCUMIND ASSISTANT</p><h1>Rate limiting for API clients</h1></div><button class="header-action" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0-12 4 4m-4-4L8 7M5 14v5h14v-5"/></svg><span>Export</span></button></header>
+      <main class="chat-main">
+        <div class="message-feed" aria-label="Conversation messages">
+          <article class="user-message"><p>What retry strategy should clients use when they receive a 429 response?</p></article>
+          <article class="assistant-message">
+            <div class="message-heading"><span class="assistant-dot">DM</span><div><strong>DocuMind</strong><span>Grounded answer</span></div><button class="icon-button" type="button" aria-label="Copy answer" title="Copy answer"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button></div>
+            <div class="answer-copy"><p>For a <code>429 Too Many Requests</code> response, retry only after the interval communicated by <code>Retry-After</code>. If that header is absent, use exponential backoff with jitter, beginning at one second and capping retries at five attempts.</p><p>Keep retries idempotent. For write operations, send an idempotency key so that a timeout or delayed response cannot create duplicate work.</p></div>
+            <div class="code-block"><div><span>HTTP response handling</span><button type="button">Copy</button></div><pre><code>const delay = retryAfter ?? 2 ** attempt + jitter();
+await sleep(delay);
+
+if (attempt &gt;= 5) throw new Error("Retry limit reached");</code></pre></div>
+            <div class="sources"><p><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.1.1l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1M14 11a5 5 0 0 0-7.1-.1l-2 2A5 5 0 0 0 12 20l1.1-1.1"/></svg> Sources consulted</p><a href="#"><b>1</b><span>API Reliability Guide</span><small>Rate limits and retries · Section 4.2</small></a><a href="#"><b>2</b><span>Client SDK Reference</span><small>Idempotency keys · Section 2.1</small></a></div>
+          </article>
+        </div>
+      </main>
+      <form class="composer" action="#"><div class="composer-box"><textarea aria-label="Ask DocuMind" rows="1" placeholder="Ask about your documentation..."></textarea><button class="send-button" type="submit" aria-label="Send message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 4 16 8-16 8 3-8-3-8Zm3 8h13"/></svg></button></div><p>Answers are grounded in indexed documentation. <kbd>Enter</kbd> to send · <kbd>Shift + Enter</kbd> for a new line</p></form>
+    </div>
+  </body>
+</html>
