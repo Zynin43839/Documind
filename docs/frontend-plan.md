@@ -2,9 +2,10 @@
 
 ## Scope
 
-Build a React/Vite mock frontend with two routes:
+Build a React/Vite mock frontend with three routes:
 
 - `/login`: email and password sign-in only.
+- `/register`: name, email, and password account creation.
 - `/chat`: a ChatGPT-like documentation assistant.
 
 This scope is UI-only. It has no real authentication, API requests, persistence, streaming, or file upload.
@@ -24,32 +25,42 @@ Use `client/src/shared/styles/schemablue-DESIGN.md` as the visual source of trut
 ## Routing And Mock Session
 
 - Add `react-router-dom` and use `BrowserRouter`.
-- Define `/login` and `/chat`; redirect unknown paths to `/login`.
+- Define `/login`, `/register`, and `/chat`; redirect unknown paths to `/login`.
 - Keep mock authentication state in memory only.
-- A valid mock submit navigates from `/login` to `/chat`.
+- A valid mock sign-in or registration submit navigates to `/chat`.
+- Link `/login` to `/register` and provide a reciprocal sign-in link on `/register`.
 - Signing out navigates to `/login`.
 - Refreshing the page clears the mock session; visiting `/chat` then redirects to `/login`.
-- Add a Vercel SPA rewrite so direct navigation and refresh work for both routes.
+- Add a Vercel SPA rewrite so direct navigation and refresh work for all routes.
 
 ## Login Page
 
 - Full-height pale-blue canvas with a centered, white, maximum 420px card.
 - Include a compact DocuMind schema/node logo, a "Welcome back" heading, and product description.
 - Provide email and password fields with visible labels, helper text, and inline validation.
-- Provide an accessible password visibility control.
+- Provide an accessible minimal outline password visibility control that switches between eye and eye-off icons, with an updated `aria-label` and tooltip.
 - Use one full-width primary "Sign in" button.
 - Disable the submit button while pending and show "Signing in...".
 - Show form failures in a `role="alert"` region; connect field errors with `aria-describedby`.
-- Do not include registration, social sign-in, or profile UI.
+- Include a text link to `/register`. Do not include social sign-in or profile UI.
+
+## Register Page
+
+- Reuse the login page's centered SchemaBlue card, brand treatment, spacing, and input styling.
+- Include name, work email, and password fields with visible labels, appropriate autocomplete values, helper text, and inline validation.
+- Use the same accessible minimal password visibility control as login.
+- Use one full-width primary "Create account" button; disable it while pending and show "Creating account...".
+- Show form failures in a `role="alert"` region; connect field errors with `aria-describedby`.
+- Include a text link to `/login` for existing users.
 
 ## Chat Page
 
 ### Desktop Layout
 
 - Use a 280px persistent history sidebar and flexible main workspace.
-- The sidebar contains the logo, a "New chat" action, mock conversations grouped by recency, and an account row with sign out.
+- The sidebar contains the logo, a "New chat" action, mock conversations in descending recency order without date-group headings, and an account row with sign out.
 - The active conversation uses a pale-blue background and a 2px primary-blue left border.
-- The main workspace has a compact header, a centered message column with an 800px maximum reading width, and a sticky composer.
+- The main workspace has a compact header without an export action, a centered message column with an 800px maximum reading width, and a sticky composer.
 
 ### Conversation
 
@@ -78,6 +89,8 @@ client/src/
     auth/
       LoginPage.tsx
       LoginForm.tsx
+      RegisterPage.tsx
+      RegisterForm.tsx
       auth.types.ts
     chat/
       ChatPage.tsx
@@ -116,7 +129,7 @@ client/src/
 - Provide one visible `h1` per page.
 - Use native buttons, inputs, and textarea controls.
 - Give every icon-only control an `aria-label`, tooltip, and visible focus ring.
-- Use explicit labels and autocomplete values for login inputs.
+- Use explicit labels and autocomplete values for login and registration inputs.
 - Label the message feed and reserve `aria-live="polite"` for future streaming status, not full response text.
 - Respect `prefers-reduced-motion` and ensure all behavior works without hover.
 
@@ -126,4 +139,4 @@ client/src/
 - Use `npm run build` and deploy `dist`.
 - Add the SPA rewrite required by `BrowserRouter`.
 - Verify with `npm run lint` and `npm run build`.
-- Manually test login validation, route redirects, direct route refresh, logout, message submission, Enter/Shift+Enter, and desktop/mobile layouts.
+- Manually test login and registration validation, password visibility controls, login/register navigation, route redirects, direct route refresh, logout, message submission, Enter/Shift+Enter, and desktop/mobile layouts.

@@ -1,26 +1,123 @@
 @import "tailwindcss";
 
-/* SchemaBlue Design System */
-:root {
-  --black: #000000;
-  --white: #FFFFFF;
-  --blue: #0000FF;
-  --green: #00CC66;
-  --orange: #FF6600;
+@theme {
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Roboto Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+
+  --color-canvas: #f0f4ff;
+  --color-surface: #ffffff;
+  --color-ink: #1e293b;
+  --color-muted: #64748b;
+  --color-border: #dbeafe;
+  --color-border-strong: #93c5fd;
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-soft: #eff6ff;
+  --color-secondary: #8b5cf6;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-danger-soft: #fef2f2;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --shadow-card: 0 1px 3px rgb(30 41 59 / 6%), 0 1px 2px rgb(30 41 59 / 4%);
+  --shadow-raised: 0 4px 6px rgb(30 41 59 / 7%), 0 2px 4px rgb(30 41 59 / 5%);
+  --shadow-modal: 0 10px 20px rgb(30 41 59 / 10%), 0 4px 8px rgb(30 41 59 / 6%);
+  --shadow-overlay: 0 20px 40px rgb(30 41 59 / 15%);
+
+  --text-display: 1.875rem;
+  --text-display--line-height: 2.5rem;
+  --text-headline: 1.5rem;
+  --text-headline--line-height: 2rem;
+  --text-subhead: 1.125rem;
+  --text-subhead--line-height: 1.625rem;
+  --text-body-lg: 1rem;
+  --text-body-lg--line-height: 1.625rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.375rem;
+  --text-body-sm: 0.8125rem;
+  --text-body-sm--line-height: 1.25rem;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.125rem;
+  --text-overline: 0.6875rem;
+  --text-overline--line-height: 1rem;
+  --text-code: 0.8125rem;
+  --text-code--line-height: 1.25rem;
+
+  --spacing-auth: 26.25rem;
+  --spacing-sidebar: 17.5rem;
+  --spacing-reading: 50rem;
+  --spacing-control: 2.625rem;
 }
 
-body {
-  margin: 0;
-  font-family: 'Sarabun', sans-serif;
-  background: var(--white);
-  color: var(--black);
-  line-height: 1.6;
-}
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Kanit', sans-serif;
-}
+  html {
+    min-height: 100%;
+  }
 
-#root {
-  min-height: 100vh;
+  body {
+    min-width: 20rem;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  input:disabled,
+  textarea:disabled,
+  select:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  svg {
+    flex: none;
+  }
+
+  :focus-visible {
+    outline: 3px solid rgb(59 130 246 / 30%);
+    outline-offset: 2px;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition: none !important;
+      animation: none !important;
+    }
+  }
 }
