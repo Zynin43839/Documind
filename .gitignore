@@ -38,3 +38,6 @@ lerna-debug.log*
 
 # Planning & Design files
 Mydoc/
+
+# Local opencode config (MCP credentials, machine-specific)
+opencode.json

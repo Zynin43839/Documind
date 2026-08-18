@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DocuMind — Meeting Deck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --canvas: #f0f4ff;
+        --surface: #ffffff;
+        --ink: #1e293b;
+        --muted: #64748b;
+        --border: #dbeafe;
+        --primary: #3b82f6;
+        --primary-hover: #2563eb;
+        --primary-soft: #eff6ff;
+        --secondary: #8b5cf6;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --danger-soft: #fef2f2;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background: var(--canvas);
+        color: var(--ink);
+        font-family: "IBM Plex Sans Thai", "Roboto", sans-serif;
+        line-height: 1.6;
+      }
+      .deck { max-width: 1080px; margin: 0 auto; padding: 24px 20px 80px; }
+
+      /* Slide = a full-screen-ish card */
+      .slide {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 40px 44px;
+        margin: 24px 0;
+        box-shadow: 0 10px 20px rgb(30 41 59 / 10%), 0 4px 8px rgb(30 41 59 / 6%);
+        min-height: 70vh;
+      }
+      .slide-kicker {
+        font-family: "Roboto Mono", monospace;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--primary-hover);
+        margin: 0 0 8px;
+      }
+      .slide h1 { font-size: 30px; line-height: 1.3; margin: 0 0 6px; }
+      .slide h2 { font-size: 22px; margin: 32px 0 10px; }
+      .slide h3 { font-size: 16px; margin: 20px 0 6px; }
+      .slide p { font-size: 15px; margin: 6px 0; color: var(--ink); }
+      .slide .lead { font-size: 17px; color: var(--muted); margin-bottom: 20px; }
+
+      /* Navigation */
+      .deck-nav {
+        position: sticky; top: 12px; z-index: 10;
+        display: flex; gap: 8px; flex-wrap: wrap;
+        background: rgb(255 255 255 / 92%);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 8px 14px;
+        backdrop-filter: blur(6px);
+        margin-bottom: 16px;
+      }
+      .deck-nav a {
+        font-size: 13px; font-weight: 600; color: var(--primary-hover);
+        text-decoration: none; padding: 4px 10px; border-radius: 999px;
+      }
+      .deck-nav a:hover { background: var(--primary-soft); }
+
+      /* Cards & grids */
+      .grid { display: grid; gap: 14px; }
+      .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+      .grid-3 { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+      .card {
+        background: var(--canvas);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 18px;
+      }
+      .card h3 { margin: 0 0 8px; font-size: 15px; }
+      .card p, .card li { font-size: 13.5px; }
+      .card ul { margin: 4px 0 0; padding-left: 18px; }
+
+      /* Tags / badges */
+      .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-right: 6px; }
+      .tag-rec { background: #ecfdf5; color: var(--success); }
+      .tag-open { background: #fef3c7; color: #b45309; }
+      .tag-done { background: var(--primary-soft); color: var(--primary-hover); }
+      .tag-future { background: var(--danger-soft); color: var(--danger); }
+
+      /* Tables */
+      table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 12px 0; }
+      th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+      th { background: var(--canvas); font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+      .num { font-family: "Roboto Mono", monospace; }
+
+      /* Code / schema blocks */
+      .schema {
+        font-family: "Roboto Mono", monospace;
+        font-size: 13px;
+        background: #0f172a;
+        color: #e2e8f0;
+        border-radius: 10px;
+        padding: 16px 18px;
+        overflow-x: auto;
+        white-space: pre;
+        line-height: 1.55;
+        margin: 12px 0;
+      }
+      .schema .c { color: #94a3b8; }
+      .schema .hl { color: #93c5fd; }
+
+      /* Logo comparison row */
+      .logo-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; margin-top: 12px; }
+      .logo-opt { text-align: center; }
+      .logo-opt svg { display: block; margin: 0 auto 6px; }
+      .logo-opt .lbl { font-size: 12.5px; font-weight: 600; }
+      .logo-opt .desc { font-size: 12px; color: var(--muted); max-width: 200px; margin: 2px auto 0; }
+
+      .decision-list { list-style: none; padding: 0; margin: 12px 0; }
+      .decision-list li { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--border); font-size: 15px; }
+      .decision-list .mark { flex: none; width: 24px; height: 24px; border-radius: 999px; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+      .mark-open { background: #fef3c7; color: #b45309; }
+      .mark-done { background: #ecfdf5; color: var(--success); }
+
+      footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 32px; }
+      @media (max-width: 640px) {
+        .slide { padding: 24px 20px; }
+        .slide h1 { font-size: 24px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="deck">
+
+      <nav class="deck-nav" aria-label="Slides">
+        <a href="#s1">1 · สรุปโปรเจกต์</a>
+        <a href="#s2">2 · สถานะล่าสุด</a>
+        <a href="#s3">3 · วาระที่ตัดสินใจ</a>
+        <a href="#s4">4 · ฟอนต์</a>
+        <a href="#s5">5 · Logo</a>
+        <a href="#s6">6 · TH/ENG</a>
+        <a href="#s7">7 · หน้า Register</a>
+        <a href="#s8">8 · Git ข้อตกลง</a>
+        <a href="#s9">9 · เวอร์ชัน doc</a>
+        <a href="#s10">10 · Database</a>
+        <a href="#s11">11 · แผนถัดไป</a>
+      </nav>
+
+      <!-- ══════════ SLIDE 1 ══════════ -->
+      <section class="slide" id="s1">
+        <p class="slide-kicker">DocuMind · Team Review</p>
+        <h1>ภาพรวมโปรเจกต์ + วาระตัดสินใจรอบประชุม</h1>
+        <p class="lead">สไลด์นี้สรุปสถานะปัจจุบัน ของที่ remote มีแล้ว จุดที่ทีมต้องตัดสินใจ และแผนถัดไป — อ่านจบแล้วช่วยโหวต/ตอบในหัวข้อที่ทำเครื่องหมาย <span class="tag tag-open">ต้องตัดสินใจ</span></p>
+
+        <h2>DocuMind คืออะไร</h2>
+        <p>AI documentation chatbot ที่ใช้ <strong>RAG (Retrieval-Augmented Generation)</strong> — ถามคำถามภาษาธรรมชาติ แล้วตอบจากเอกสาร developer docs ที่ถูก crawl มา พร้อมแหล่งอ้างอิง (citations)</p>
+
+        <div class="grid grid-3">
+          <div class="card">
+            <h3>🔐 Auth</h3>
+            <p>Login / Register (email + password) · Google login = อนาคต</p>
+          </div>
+          <div class="card">
+            <h3>💬 RAG Chat</h3>
+            <p>ถาม → embed → ค้น pgvector → Gemini สรุป → stream + cite</p>
+          </div>
+          <div class="card">
+            <h3>🕷️ Auto-Crawl</h3>
+            <p>Playwright crawl เอกสาร → chunk → embed 768 dims → pgvector</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ SLIDE 2 ══════════ -->
+      <section class="slide" id="s2">
+        <p class="slide-kicker">สถานะล่าสุด</p>
+        <h1>ของที่ทีมทำไปแล้ว (remote main)</h1>
+        <p class="lead">Remote อยู่ใน commit <span class="num">b614625</span> — มีของใหม่จากรอบที่แล้วที่ local pull เข้าแล้ว</p>
+
+        <table>
+          <thead>
+            <tr><th>ของใหม่</th><th>รายละเอียด</th><th>สถานะ</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="num">docs/database-plan.md</span></td>
+              <td>Schema ครบ 12 ตาราง: sources → documents → <strong>document_versions</strong> → chunks → embeddings + conversations/messages/retrieval/citations + RLS + Drizzle migration</td>
+              <td><span class="tag tag-done">วางแผนแล้ว</span></td>
+            </tr>
+            <tr>
+              <td><span class="num">mockups/register.html</span></td>
+              <td>Mockup หน้า Register (name/email/password) พร้อม link สลับกับ login</td>
+              <td><span class="tag tag-done">Mockup แล้ว</span></td>
+            </tr>
+            <tr>
+              <td><span class="num">docs/index-css-guide.md</span></td>
+              <td>Design tokens (SchemaBlue) แบบ Tailwind v4: สี ฟอนต์ radius shadow layout</td>
+              <td><span class="tag tag-done">วางแผนแล้ว</span></td>
+            </tr>
+            <tr>
+              <td><span class="num">client/src/index.css</span></td>
+              <td>Tokens ถูก implement ใน Tailwind <span class="num">@theme</span> เรียบร้อย</td>
+              <td><span class="tag tag-done">ทำแล้ว</span></td>
+            </tr>
+            <tr>
+              <td><span class="num">docs/frontend-plan.md</span></td>
+              <td>อัปเดตเป็น 3 routes: <span class="num">/login /register /chat</span></td>
+              <td><span class="tag tag-done">วางแผนแล้ว</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p><strong>หมายเหตุ:</strong> React app ยังเป็น placeholder (แค่หน้าแรกเปล่าๆ) — ยังไม่ได้ implement หน้าไหนจริง</p>
+      </section>
+
+      <!-- ══════════ SLIDE 3 ══════════ -->
+      <section class="slide" id="s3">
+        <p class="slide-kicker">วาระทีมต้องตอบ</p>
+        <h1>จุดที่ต้องตัดสินใจในประชุมนี้</h1>
+
+        <ul class="decision-list">
+          <li><span class="mark mark-open">1</span><div><strong>ฟอนต์ภาษาไทย</strong> — Roboto ตัวเดิมไม่มี glyph ไทย → ต้องเลือกฟอนต์ใหม่ (slide 4)</div></li>
+          <li><span class="mark mark-open">2</span><div><strong>โลโก้ใหม่</strong> — 3 ทิศทางที่เสนอ (slide 5)</div></li>
+          <li><span class="mark mark-open">3</span><div><strong>ปุ่ม TH/ENG</strong> — default อังกฤษ? สลับแค่ UI หรือรวมคำตอบ AI ด้วย? (slide 6)</div></li>
+          <li><span class="mark mark-open">4</span><div><strong>หน้า Register</strong> — field เท่า mockup ไหม? (slide 7)</div></li>
+          <li><span class="mark mark-open">5</span><div><strong>ข้อตกลง Git</strong> — review ก่อน merge/push ยืนยันกติกา (slide 8)</div></li>
+          <li><span class="mark mark-open">6</span><div><strong>การจัดการ doc หลายเวอร์ชัน</strong> — เก็บทุกเวอร์ชัน หรือล่าสุดเป็นหลัก? (slide 9)</div></li>
+        </ul>
+
+        <p>หัวข้อที่ปิดได้แล้ว: Database schema, structure UI tokens, mockup register — ดู slide 10</p>
+      </section>
+
+      <!-- ══════════ SLIDE 4 ══════════ -->
+      <section class="slide" id="s4">
+        <p class="slide-kicker">วาระที่ 1</p>
+        <h1>ฟอนต์ภาษาไทย</h1>
+        <p class="lead"><span class="tag tag-open">ต้องเลือก 1 ตัว</span> ปัญหา: Roboto (ของเดิม) ไม่มี glyph ไทย → ตอนนี้เว็บภาษาไทยจะ fallback เป็นฟอนต์ระบบ ดูไม่เนียน</p>
+
+        <table>
+          <thead>
+            <tr><th>ฟอนต์</th><th>จุดเด่น</th><th>เหมาะกับ</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>IBM Plex Sans Thai</strong> <span class="tag tag-rec">แนะนำ</span></td>
+              <td>IBM ออกแบบให้จับคู่กับ Roboto/Roboto Mono ที่ใช้อยู่ · น้ำหนักหลากหลาย · ดู technical</td>
+              <td>Dev tool — เข้ากับ design system เดิมที่สุด เปลี่ยนแค่ตัว font</td>
+            </tr>
+            <tr>
+              <td><strong>Prompt</strong></td>
+              <td>กลมมน เป็นมิตร · ฟอนต์ไทยยอดนิยมของ Google</td>
+              <td>อยากได้ feel friendly ไม่ formal</td>
+            </tr>
+            <tr>
+              <td><strong>Sarabun</strong></td>
+              <td>ตัวกว้าง อ่านง่าย · ใช้แพร่หลายในเอกสาร</td>
+              <td>เน้นอ่าน content ยาว แต่ดูทางการ</td>
+            </tr>
+            <tr>
+              <td><strong>Noto Sans Thai</strong></td>
+              <td>มาตรฐาน Google · ครอบคลุมทุกภาษา</td>
+              <td>ปลอดภัยสุด แต่หน้าตา generic</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>ตัวอย่างเทียบของจริงอยู่ใน <span class="num">mockups/font-logo-preview.html</span> (เปิดใน browser)</p>
+      </section>
+
+      <!-- ══════════ SLIDE 5 ══════════ -->
+      <section class="slide" id="s5">
+        <p class="slide-kicker">วาระที่ 2</p>
+        <h1>โลโก้ใหม่ — 3 ทิศทาง</h1>
+        <p class="lead"><span class="tag tag-open">ต้องเลือก 1 แบบ</span> ทุกแบบเป็น SVG วาดเอง ไม่มี dependency</p>
+
+        <div class="logo-row">
+          <div class="logo-opt">
+            <svg width="56" height="56" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <rect x="4" y="5" width="13" height="12" rx="3" fill="#3B82F6"/>
+              <rect x="23" y="5" width="13" height="12" rx="3" fill="#93C5FD"/>
+              <rect x="13.5" y="23" width="13" height="12" rx="3" fill="#2563EB"/>
+              <path d="M10 11h8M10 29h8M26 11v12M19.5 17l-6 6M6 17l7 6M34 17l-7 6" stroke="#8B5CF6" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <p class="lbl">A · Knowledge nodes → Chat <span class="tag tag-rec">แนะนำ</span></p>
+            <p class="desc">3 ก้อนความรู้เชื่อมเป็น graph + ลำแสงเข้าจุดสนทนา — เล่าเรื่อง RAG network เก็บกลิ่น schema/node เดิม</p>
+          </div>
+
+          <div class="logo-opt">
+            <svg width="56" height="56" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <path d="M8 8h14c7 0 12 5 12 12s-5 12-12 12H8V8Z" fill="#3B82F6"/>
+              <circle cx="15" cy="16" r="3.2" fill="#FFFFFF"/>
+              <circle cx="25" cy="16" r="3.2" fill="#DBEAFE"/>
+              <circle cx="20" cy="25" r="3.2" fill="#FFFFFF"/>
+              <path d="M16.5 18 18.5 22M23.5 18l-2.5 4M20 21.8v-5" stroke="#8B5CF6" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <p class="lbl">B · D + knowledge graph</p>
+            <p class="desc">ตัว "D" (DocuMind) ข้างในเป็นโหนดเชื่อมกัน = ระบบ RAG — ได้อัตลักษณ์ตัวอักษร</p>
+          </div>
+
+          <div class="logo-opt">
+            <svg width="56" height="56" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <circle cx="15" cy="18" r="9" fill="#EFF6FF" stroke="#3B82F6" stroke-width="2.5"/>
+              <path d="M18.5 14.5a3.5 3.5 0 1 0 1 2.6L17 19.5M17 22h.01" stroke="#3B82F6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="26" y="20" width="9" height="9" rx="2.5" fill="#2563EB"/>
+              <path d="m28.5 24.5 2 2 3.2-3.8" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p class="lbl">C · Q → A (ถาม → ตอบ)</p>
+            <p class="desc">เครื่องหมายถามกลายเป็นคำตอบ — minimal สุด ตรงตัว แต่ไม่สื่อ RAG/document network</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ SLIDE 6 ══════════ -->
+      <section class="slide" id="s6">
+        <p class="slide-kicker">วาระที่ 3</p>
+        <h1>ปุ่มภาษา TH / ENG</h1>
+        <p class="lead"><span class="tag tag-open">ต้องตัดสินใจ 2 จุด</span></p>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Default ภาษา?</h3>
+            <ul>
+              <li><strong>Default ENG</strong> (ตามข้อสรุป) — เปิดหน้าแรกเป็นอังกฤษ</li>
+              <li>User กดปุ่มสลับ TH — จำค่าไว้ใน <span class="num">localStorage</span> ครั้งถัดไปคงเดิม</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>ปุ่มสลับอะไรบ้าง?</h3>
+            <ul>
+              <li><strong>UI เท่านั้น</strong> — ปุ่ม/หัวข้อ/label ในหน้าเว็บเปลี่ยนภาษา</li>
+              <li><strong>รวมคำตอบ AI</strong> — ส่งภาษาไปกับ chat request ให้ AI ตอบเป็นภาษานั้น (ต้องเพิ่ม field language ใน API/prompt)</li>
+            </ul>
+          </div>
+        </div>
+
+        <p><strong>ข้อเสนอ:</strong> default ENG + สลับทั้ง UI และคำตอบ AI (ส่งภาษาไป backend) — เป็นเอกภาพกับ "output ไทยต้องแม่น"</p>
+      </section>
+
+      <!-- ══════════ SLIDE 7 ══════════ -->
+      <section class="slide" id="s7">
+        <p class="slide-kicker">วาระที่ 4</p>
+        <h1>หน้า Register</h1>
+        <p class="lead">Mockup มีแล้ว (<span class="num">mockups/register.html</span>) — ตอนนี้ต้อง implement ใน React ตาม <span class="num">docs/frontend-plan.md</span></p>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>ใน mockup / plan</h3>
+            <ul>
+              <li>3 field: Name · Work email · Password</li>
+              <li>Password visibility toggle (eye/eye-off)</li>
+              <li>Inline validation + <span class="num">role="alert"</span></li>
+              <li>Link สลับ ↔ login</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>คำถามที่ค้าง</h3>
+            <ul>
+              <li><strong>ต้องเพิ่ม field อื่นไหม?</strong> เช่น username แยก, ยืนยันรหัส (confirm password)?</li>
+              <li>หลังสมัครเสร็จ → ไป <span class="num">/chat</span> ตรง หรือต้องยืนยัน email ก่อน?</li>
+              <li>Google login — ยังเป็นอนาคต ยืนยันว่าไม่ทำตอนนี้?</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ SLIDE 8 ══════════ -->
+      <section class="slide" id="s8">
+        <p class="slide-kicker">วาระที่ 5</p>
+        <h1>ข้อตกลงการใช้ Git</h1>
+        <p class="lead"><span class="tag tag-open">ยืนยันกติกา</span> ข้อสรุปจากประชุม: <strong>ก่อน merge ต้อง review · ก่อน push ต้อง review</strong></p>
+
+        <table>
+          <thead>
+            <tr><th>หัวข้อ</th><th>ข้อเสนอ</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Branch</td><td>ทำงานใน <span class="num">feature/ชื่องาน</span> แล้ว merge เข้า <span class="num">main</span></td></tr>
+            <tr><td>ก่อน Merge</td><td>ต้องมีคน (ทีม 2 คน) review code ให้ผ่านก่อน merge</td></tr>
+            <tr><td>ก่อน Push</td><td>ตรวจ + review ก่อน push ขึ้น remote</td></tr>
+            <tr><td>Commit message</td><td>เขียนสั้น ตรงไปตรงมา อธิบายว่าทำอะไร (ดูแนวทาง commit เดิม)</td></tr>
+            <tr><td>บันทึกเป็นกฎ</td><td>เขียนลง <span class="num">AGENTS.md</span> ของโปรเจกต์ให้ AI และทีมทำตามเดียวกัน</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ══════════ SLIDE 9 ══════════ -->
+      <section class="slide" id="s9">
+        <p class="slide-kicker">วาระที่ 6</p>
+        <h1>เอกสารหลายเวอร์ชัน — จัดการยังไง</h1>
+        <p class="lead">โจทย์: doc บางอันอัปเดตหลายครั้ง (เช่น React 18 route อัปเดต 5 ครั้ง) — ถ้า user ยังใช้เวอร์ชันเก่า เราไม่ควรลบของเก่าออกจาก DB</p>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>แนวทางเดิม</h3>
+            <p>"เอาอันเก่าออก ใส่อันใหม่" — ง่าย แต่พังเพราะ user ที่ใช้เวอร์ชันเก่าจะเห็นคำตอบอ้าง doc ที่ไม่อยู่แล้ว</p>
+          </div>
+          <div class="card">
+            <h3>แนวทางใหม่ (schema รองรับแล้ว)</h3>
+            <p>เก็บทุกเวอร์ชัน: ตาราง <span class="num">document_versions</span> + flag <span class="num">is_current</span> — คำตอบเก่า cite version เดิมได้แม้ doc อัปเดตแล้ว</p>
+          </div>
+        </div>
+
+        <div class="schema"><span class="c">-- database-plan.md ตอบโจทย์นี้แล้ว</span>
+<span class="hl">documentation_sources</span>      <span class="c">-- 1 แหล่ง = 1 เว็บ + 1 version scope</span>
+  └─ <span class="hl">crawl_runs</span>
+  └─ <span class="hl">documents</span>               <span class="c">-- ตัวตนของหน้า (canonical_url)</span>
+        └─ <span class="hl">document_versions</span>  <span class="c">-- แต่ละ crawl = version, is_current</span>
+              └─ <span class="hl">chunks</span>
+                    └─ <span class="hl">chunk_embeddings</span></div>
+
+        <p><strong>ที่เหลือต้องตกลง:</strong> จะให้ AI ค้นจากเวอร์ชันไหน? (เฉพาะ <span class="num">is_current</span> ในการค้น, cite เก็บ snapshot ของ version ที่ตอบ) — schema วางไว้ให้แล้ว</p>
+      </section>
+
+      <!-- ══════════ SLIDE 10 ══════════ -->
+      <section class="slide" id="s10">
+        <p class="slide-kicker">ปิดแล้ว</p>
+        <h1>Database — สรุป schema (ปิดแล้ว)</h1>
+        <p class="lead">รายละเอียดเต็มใน <span class="num">docs/database-plan.md</span> — รวม timestamp ที่ขาดจากรอบก่อนแล้ว</p>
+
+        <div class="schema"><span class="c">-- Users</span>
+auth.users  →  <span class="hl">profiles</span>          <span class="c">(display_name, created_at, updated_at)</span>
+
+<span class="c">-- Docs & crawl</span>
+<span class="hl">documentation_sources</span> · <span class="hl">crawl_runs</span> · <span class="hl">documents</span>
+<span class="hl">document_versions</span> · <span class="hl">chunks</span> · <span class="hl">chunk_embeddings</span>
+
+<span class="c">-- Chat</span>
+<span class="hl">conversations</span> · <span class="hl">messages</span>  <span class="c">-- มี created_at + completed_at ✓</span>
+<span class="hl">retrieval_runs</span> · <span class="hl">retrieval_results</span> · <span class="hl">message_citations</span></div>
+
+        <ul class="decision-list">
+          <li><span class="mark mark-done">✓</span><div><strong>Timestamp ใน messages</strong> — schema มี <span class="num">created_at / completed_at</span> แล้ว</div></li>
+          <li><span class="mark mark-done">✓</span><div><strong>Citation ยังถูกต้องหลัง doc อัปเดต</strong> — <span class="num">message_citations</span> เก็บ snapshot (url, title, quoted_text)</div></li>
+          <li><span class="mark mark-done">✓</span><div><strong>RLS + auth.uid()</strong> — user อ่านได้เฉพาะของตัวเอง, corpus ไม่เปิดตรงให้ browser</div></li>
+          <li><span class="mark mark-done">✓</span><div><strong>Migration</strong> — ใช้ Drizzle เท่านั้น (<span class="num">drizzle generate</span> + <span class="num">migrate</span>, ห้าม push)</div></li>
+        </ul>
+      </section>
+
+      <!-- ══════════ SLIDE 11 ══════════ -->
+      <section class="slide" id="s11">
+        <p class="slide-kicker">แผนถัดไป</p>
+        <h1>ลำดับงาน + ของที่ค้างคุยพรุ่งนี้</h1>
+
+        <h2>ลำดับ implement (หลังได้ข้อสรุปในสไลด์นี้)</h2>
+        <table>
+          <thead>
+            <tr><th>#</th><th>งาน</th><th>ขึ้นกับ</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="num">1</td><td>i18n core (TH/ENG, default en) + font ไทย</td><td>ฟอนต์ (วาระ 1)</td></tr>
+            <tr><td class="num">2</td><td>Logo component</td><td>ทิศทาง logo (วาระ 2)</td></tr>
+            <tr><td class="num">3</td><td>Routing + Login + Register</td><td>—</td></tr>
+            <tr><td class="num">4</td><td>CSS ไทยแม่น (word-wrap/line-height)</td><td>—</td></tr>
+            <tr><td class="num">5</td><td>AGENTS.md: git workflow rule</td><td>กติกา Git (วาระ 5)</td></tr>
+          </tbody>
+        </table>
+
+        <h2>นัดคุยพรุ่งนี้</h2>
+        <div class="card">
+          <p><strong>Routing + Backend API</strong> ของระบบนี้ — เตรียมอภิปราย:</p>
+          <ul>
+            <li>REST endpoints: auth (register/login), chat (stream), history</li>
+            <li>JWT validation + rate limiting</li>
+            <li>Drizzle migration ขั้นตอน</li>
+            <li>Express ตอนนี้เป็นไฟล์เริ่มต้นใน <span class="num">server/src/index.ts</span></li>
+          </ul>
+        </div>
+
+        <p style="margin-top:24px;"><strong>เพื่อให้ทีมโหวตง่าย:</strong> ตอบได้เลยว่า
+          <span class="tag tag-open">ฟอนต์?</span>
+          <span class="tag tag-open">Logo?</span>
+          <span class="tag tag-open">TH/ENG scope?</span>
+          <span class="tag tag-open">Register field?</span>
+          <span class="tag tag-open">Git กติกา?</span>
+        </p>
+      </section>
+
+      <footer>DocuMind · Deck สรุปประชุม — สร้างจากข้อมูลใน repo (docs/, mockups/, README.md) · เปิดจากไฟล์นี้โดยตรง</footer>
+    </div>
+  </body>
+</html>
