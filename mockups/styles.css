@@ -11,4 +11,11 @@ button, input, textarea { font:inherit; } button { cursor:pointer; } a { color:i
 @media (max-width: 900px) { .sidebar { flex-basis:240px; }.composer { left:240px; }.chat-header { padding-right:18px; padding-left:18px; }.chat-main { padding-right:16px; padding-left:16px; } }
 @media (max-width: 700px) { .sidebar { display:none; }.menu-button { display:grid; }.chat-header { min-height:60px; padding:8px 12px; }.chat-header .eyebrow { display:none; }.chat-header h1 { max-width:210px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }.header-action span { display:none; }.header-action { padding:7px; }.chat-main { padding:24px 12px 135px; }.user-message { max-width:88%; }.assistant-message { padding:15px; }.answer-copy { font-size:14px; }.composer { left:0; padding:12px 12px max(12px, env(safe-area-inset-bottom)); }.composer > p { font-size:10px; }.sources small { line-height:1.35; }.auth-page { padding:16px; }.auth-card { padding:24px; } }
 .history-nav { gap:2px; }.auth-switch { margin:20px 0 0; color:var(--muted); font-size:13px; text-align:center; }.auth-secondary-link { margin-top:8px; }.auth-switch a { color:var(--blue-dark); font-weight:600; }.auth-switch a:hover { text-decoration:underline; }
+.otp-grid { display:flex; gap:8px; justify-content:space-between; margin:8px 0; }
+.otp-input { width:48px; height:52px; text-align:center; font:700 22px/1 var(--mono); border:1px solid #93c5fd; border-radius:8px; outline:none; background:#fff; color:var(--ink); }
+.otp-input:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgb(59 130 246 / .15); }
+.resend-row { display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--muted); margin-top:4px; }
+.resend-button { background:none; border:0; padding:0; color:var(--blue-dark); font-weight:600; cursor:pointer; }
+.resend-button:disabled { color:var(--muted); cursor:not-allowed; }
+.resend-button:hover:not(:disabled) { text-decoration:underline; }
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; animation:none!important; } }

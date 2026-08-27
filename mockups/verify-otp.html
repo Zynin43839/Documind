@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verify email | DocuMind</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="auth-page">
+    <main class="auth-shell">
+      <section class="auth-card" aria-labelledby="verify-otp-title">
+        <a class="brand" href="login.html" aria-label="DocuMind home">
+          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="3" y="4" width="10" height="9" rx="2"/><rect x="19" y="4" width="10" height="9" rx="2"/><rect x="11" y="20" width="10" height="9" rx="2"/><path d="M13 8.5h6M8 13v7m16-7v7m-11 4.5h6"/></svg></span>
+          <span>DocuMind</span>
+        </a>
+        <div class="auth-intro">
+          <p class="eyebrow">EMAIL VERIFICATION</p>
+          <h1 id="verify-otp-title">Enter verification code</h1>
+          <p>We've sent a 6-digit code to <strong>alex@company.com</strong>. Enter it below to verify your email.</p>
+        </div>
+        <form class="sign-in-form" action="#" method="post">
+          <div class="field">
+            <div class="label-row">
+              <label>6-digit code</label>
+              <a href="register.html" class="forgot-link">Change email</a>
+            </div>
+            <div class="otp-grid" id="otp-container">
+              <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 1" autofocus required>
+              <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 2" required>
+              <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 3" required>
+              <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 4" required>
+              <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 5" required>
+              <input class="otp-input" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Digit 6" required>
+            </div>
+            <div class="resend-row">
+              <span>Didn't receive code?</span>
+              <button type="button" class="resend-button" id="resend-btn" disabled>Resend code (<span id="timer">00:59</span>)</button>
+            </div>
+          </div>
+          <button class="button button-primary submit-button" type="submit">Verify & Continue <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13m-5-5 5 5-5 5"/></svg></button>
+        </form>
+        <p class="auth-switch">Already verified? <a href="login.html">Sign in</a></p>
+        <p class="security-note"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> Verification code expires in 10 minutes</p>
+      </section>
+    </main>
+
+    <script>
+      const inputs = Array.from(document.querySelectorAll('.otp-input'));
+      const container = document.getElementById('otp-container');
+
+      inputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+          const val = e.target.value.replace(/[^0-9]/g, '');
+          e.target.value = val;
+          if (val && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !input.value && index > 0) {
+            inputs[index - 1].focus();
+          }
+        });
+      });
+
+      container.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+        pasteData.split('').forEach((char, i) => {
+          if (inputs[i]) {
+            inputs[i].value = char;
+          }
+        });
+        if (inputs[pasteData.length - 1]) {
+          inputs[pasteData.length - 1].focus();
+        } else if (inputs[5]) {
+          inputs[5].focus();
+        }
+      });
+
+      // Resend countdown timer logic
+      let timeLeft = 59;
+      const timerElement = document.getElementById('timer');
+      const resendBtn = document.getElementById('resend-btn');
+
+      const countdown = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          resendBtn.disabled = false;
+          resendBtn.innerHTML = 'Resend code';
+        } else {
+          const secs = timeLeft < 10 ? '0' + timeLeft : timeLeft;
+          timerElement.textContent = `00:${secs}`;
+        }
+      }, 1000);
+
+      resendBtn.addEventListener('click', () => {
+        if (!resendBtn.disabled) {
+          alert('A new verification code has been sent to your email.');
+          // Restart countdown
+          timeLeft = 59;
+          resendBtn.disabled = true;
+          resendBtn.innerHTML = 'Resend code (<span id="timer">00:59</span>)';
+        }
+      });
+    </script>
+  </body>
+</html>
