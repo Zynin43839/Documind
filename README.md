@@ -1,49 +1,50 @@
-# DocuMind
+﻿# DocuMind
 
-AI-powered documentation chatbot with RAG (Retrieval-Augmented Generation)
+AI documentation chatbot ด้วย **RAG (Retrieval-Augmented Generation)** — ถามคำถามภาษาไทย/อังกฤษ แล้วได้คำตอบพร้อมแหล่งอ้างอิงจาก documentation ที่ crawl มา
 
 ---
 
 ## 🎯 Problem → Solution
 
-**Problem:**
-Developer documentation is scattered across multiple sites — React docs, Next.js docs, Tailwind docs, TypeScript docs. Finding a specific answer means opening multiple tabs, searching through pages, and often not finding what you need. Documentation fatigue is real.
+**Problem:** Developer documentation กระจายหลายที่ (React, Next.js, Tailwind, TypeScript...) หาคำตอบต้องเปิดหลายแท็บ ค้นหาไม่เจอ — documentation fatigue.
 
-**Solution:**
-DocuMind uses RAG to answer questions from crawled developer documentation. Ask a question in natural language, get an answer with source citations — all in one place.
+**Solution:** DocuMind ใช้ RAG ตอบคำถามจาก documentation ที่ crawl มา ถามด้วยภาษาธรรมชาติ ได้คำตอบพร้อม source citation ในที่เดียว
+
+(ไม่มี file upload — ใช้ crawled data อย่างเดียว โดย design)
 
 ---
 
 ## ✨ Features
 
-- 🔐 Login / Register (Supabase Auth)
-- 💬 RAG-powered Chat — ask questions, get answers from docs
-- 📜 Chat History — view previous conversations per user session
-- 👤 Profile Management — change display name
-- 🕷️ Auto-Crawl — crawl and index documentation automatically
+- 🔐 Register / Login — name + work email + password + **Verify ด้วย OTP 6 หลัก (email)**
+- 💬 RAG Chat — ถามคำถาม ได้คำตอบ + citations (SSE streaming)
+- 📜 Chat History — ดูประวัติแชตต่อ user
+- 🕷️ Auto-Crawl — Crawlee AdaptivePlaywright crawl + index docs
+- 🔎 Version search — เลือก version ของ doc (dropdown, default ล่าสุด)
+- 🌐 สวิตช์ภาษาแยก 2 ตัว: UI lang + AI lang
 - 🎨 SchemaBlue design system
 
-**Not included (by design):**
-- ❌ File upload — documentation is crawled, not uploaded
-- ❌ Profile pictures — focus on functionality, not appearance
+**Not included (by design):** file upload · admin page · dark mode
 
 ---
 
-## 📊 Tech Stack
+## 📊 Tech Stack (locked 2026-09-02)
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18 |
-| Backend | Express.js |
-| Database | Supabase (PostgreSQL + pgvector) |
-| Auth | Express (JWT) |
-| LLM | Gemini 1.5 Flash |
-| Embedding | Gemini text-embedding-004 |
-| Crawler | Playwright |
-| Design | SchemaBlue |
-| Deploy | Vercel + Docker + GitHub Actions |
+| Layer | เทคโนโลยี |
+|-------|----------|
+| Frontend | Vite React SPA |
+| Backend | Express + TypeScript |
+| Database | Supabase (PostgreSQL + pgvector, region Singapore) |
+| Auth | Express JWT (Bearer + refresh HttpOnly cookie, rotation) |
+| LLM | Gemini (@google/genai, pin <3.0.0) |
+| Embedding | gemini-embedding-001 (768d, MRL + L2-normalize) |
+| Crawler | Crawlee AdaptivePlaywright + Cheerio + Turndown |
+| Verify | OTP email (SM provider ยังเปิดให้เลือก) |
+| Backend Host | Belmo (free) |
+| Frontend Deploy | Vercel Hobby |
+| Board | GitHub Projects v2 |
 
-**Total cost: 0 THB** — all services use free tier
+**Total cost: 0 THB** (ทุก service ใช้ free tier)
 
 ---
 
@@ -52,7 +53,7 @@ DocuMind uses RAG to answer questions from crawled developer documentation. Ask 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌──────────────────┐
 │   React UI  │────▶│  Express API │────▶│    Supabase      │
-│  (Vercel)   │     │   (Docker)   │     │  PostgreSQL      │
+│  (Vercel)   │     │    (Belmo)   │     │  PostgreSQL      │
 └─────────────┘     └──────┬───────┘     │  + pgvector      │
                            │             │  + Auth + RLS    │
                            ▼             └──────────────────┘
@@ -63,20 +64,37 @@ DocuMind uses RAG to answer questions from crawled developer documentation. Ask 
 ```
 
 **Data Flow:**
+1. **Ingestion:** Documentation → Crawlee → Parse → Chunk → Embed (768d) → pgvector
+2. **Query:** User Question → Embed query → pgvector hybrid search (BM25+RRF) → Top-k chunks → Gemini → SSE stream
 
-1. **Ingestion:** Documentation → Playwright → Parse → Chunk → Embed (768 dims) → pgvector
-2. **Query:** User Question → Embed query → pgvector cosine search → Top-5 chunks → Gemini Flash → Stream response
+---
+
+## 🔌 API Endpoints (v1)
+
+**Auth (OTP):** `POST /auth/register`, `/auth/verify`, `/auth/resend-otp`, `/auth/login`, `/auth/refresh`, `/auth/reset-password`, `/auth/logout` · `GET /me`
+
+**Chat:** `POST /chats` (upsert) · `GET /chats` · `GET /chats/:id` · `GET /chats/:id/messages` (cursor) · `POST /chats/:id/turns` (SSE)
+
+**Docs/Crawler:** `GET /docs/:id/versions` · `GET /docs/:id?version=` · `GET /crawler/status`
+
+(แผน tech stack และ API สรุปด่านบน: ตัดสินใจแล้วตาม decision record ภายในทีม — เต็มอยู่ใน `Mydoc/` สำหรับสมาชิกทีมที่ access)
+
+---
+
+## 🗂️ Board / Project Management
+
+จัดการ backlog บน **GitHub Projects v2** — Status: Backlog / Todo / In Progress / In Review / Done / Blocked + Fields: Priority / Epic / Work Type / Sprint / Due Date
+
+คู่มือ: `docs/github-projects-guide.md` · Template card: `docs/task-card-template.md`
 
 ---
 
 ## 📚 References
 
-- [Stack Overflow Survey 2025](https://survey.stackoverflow.co/2025/technology)
-- [Gemini API](https://ai.google.dev/gemini-api/docs)
-- [Supabase](https://supabase.com/docs)
-- [Playwright](https://playwright.dev/)
-- [SchemaBlue Design](https://designmd.ai/chef/schemablue)
+- [Gemini API](https://ai.google.dev/gemini-api/docs) · [Supabase](https://supabase.com/docs) · [Crawlee](https://crawlee.dev/) · [Vercel](https://vercel.com)
 
 ---
 
-MIT License
+## License
+
+MIT
