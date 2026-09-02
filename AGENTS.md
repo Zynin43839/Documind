@@ -2,9 +2,9 @@
 
 ## LANGUAGE OF AGENTS.md (Important)
 
-- This file and any AGENTS.md MUST be written in English only.
-- Never write AGENTS.md content in Thai (or any other language).
-- Note: this rule is about the AGENTS.md file itself; communicating with the user in Thai is still fine.
+- This file, any AGENTS.md, and any SKILL.md MUST be written in English only.
+- Never write AGENTS.md or SKILL.md content in Thai (or any other language).
+- Note: this rule is about those files themselves; communicating with the user in Thai is still fine.
 
 ## RESPONSES
 
