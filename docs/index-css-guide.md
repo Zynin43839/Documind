@@ -173,7 +173,7 @@ Use a persistent sidebar at `md` and above. Below `md` (768px), keep the sidebar
 </button>
 ```
 
-The drawer must use `@radix-ui/react-dialog` so focus trapping, Escape handling, focus restoration, and modal semantics are handled correctly.
+The drawer should provide focus trapping, Escape handling, focus restoration, and modal semantics. `@radix-ui/react-dialog` is a suitable option once it is added as a dependency; do not add the dependency yet (not locked by the team).
 
 ## Global Behavior Already Provided
 

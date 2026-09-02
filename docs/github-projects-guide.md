@@ -41,11 +41,11 @@ gh project create --owner "@me" --title "DocuMind Backlog"
 gh project field-list 1 --owner "@me" --format json
 
 # 3) สร้าง field ใหม่ (เช่น Priority / Epic / Work Type / Estimate)
-# ⚠️ อย่าใช้ชื่อ "Type" หรือ "Estimate" — Type ติดชื่อสงวนใน UI, Estimate มักถูกยึด → ใช้ "Work Type" และ "Story Points" แทน
+# ⚠️ อย่าใช้ชื่อ "Type" (ติดชื่อสงวนใน UI) — board ใช้ชื่อ "Estimate" (TEXT / story points ตั้งเอง)
 gh project field-create 1 --owner "@me" --name "Priority" --data-type "SINGLE_SELECT" --single-select-options "Low,Medium,High"
 gh project field-create 1 --owner "@me" --name "Epic" --data-type "SINGLE_SELECT" --single-select-options "FE,BE,AUTH,INFRA,CRAWLER"
 gh project field-create 1 --owner "@me" --name "Work Type" --data-type "SINGLE_SELECT" --single-select-options "Frontend,Backend,Infra,Decision,Test"
-gh project field-create 1 --owner "@me" --name "Story Points" --data-type "NUMBER"
+gh project field-create 1 --owner "@me" --name "Estimate" --data-type "TEXT"
 
 # 4) สร้าง draft issue (ticket) เข้า project
 # body ที่เป็นแค่บรรทัดเดียว
@@ -239,7 +239,7 @@ gh api graphql -f query='
 ## 6) แนวทางที่แนะนำสำหรับ DocuMind
 
 - ใช้ **Status field 6 สถานะ** (Backlog / Todo / In Progress / In Review / Done / Blocked) — ดูคำอธิบายแต่ละสถานะใน §7
-  - เพิ่ม fields: `Priority`, `Epic`, `Work Type`, `Story Points`
+  - เพิ่ม fields: `Priority`, `Epic`, `Work Type`, `Estimate`
 - ใช้ **draft issue** สำหรับ backlog ที่ยังไม่คอนเฟิร์ม / **issue จริง** สำหรับ task ที่จะ implement แล้วต้องการ track ใน repo
 - **Acceptance criteria** ใส่ใน `body` ของ ticket (เป็น checklist `- [ ]`) — GitHub Projects v2 ไม่มี field AC แยก → ใช้ body checklist
 - เขียน **script reusable** ที่ prefetch field/option ID แล้ว loop สร้าง items (เพราะ 2-step) → แจกใน repo เพื่อให้ทีมไม่ต้องจำ GraphQL

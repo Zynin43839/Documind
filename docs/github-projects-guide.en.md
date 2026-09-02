@@ -41,11 +41,11 @@ gh project create --owner "@me" --title "DocuMind Backlog"
 gh project field-list 1 --owner "@me" --format json
 
 # 3) Create new fields (e.g. Priority / Epic / Work Type / Estimate)
-# ⚠️ Avoid the names "Type" or "Estimate" — "Type" is reserved in the UI, "Estimate" is often taken → use "Work Type" and "Story Points" instead
+# ⚠️ Avoid the name "Type" (reserved in the UI). "Estimate" is the field name used on the board (TEXT / story points, set manually).
 gh project field-create 1 --owner "@me" --name "Priority" --data-type "SINGLE_SELECT" --single-select-options "Low,Medium,High"
 gh project field-create 1 --owner "@me" --name "Epic" --data-type "SINGLE_SELECT" --single-select-options "FE,BE,AUTH,INFRA,CRAWLER"
 gh project field-create 1 --owner "@me" --name "Work Type" --data-type "SINGLE_SELECT" --single-select-options "Frontend,Backend,Infra,Decision,Test"
-gh project field-create 1 --owner "@me" --name "Story Points" --data-type "NUMBER"
+gh project field-create 1 --owner "@me" --name "Estimate" --data-type "TEXT"
 
 # 4) Create a draft issue (ticket) into the project
 gh project item-create 1 --owner "@me" --title "Implement login form" --body "..."
@@ -238,7 +238,7 @@ gh api graphql -f query='
 ## 6) Recommended Approach for DocuMind
 
 - Use the **Status field with 6 states** (Backlog / Todo / In Progress / In Review / Done / Blocked) — see explanations in §7
-  - add fields: `Priority`, `Epic`, `Work Type`, `Story Points`
+  - add fields: `Priority`, `Epic`, `Work Type`, `Estimate`
 - Use **draft issues** for unconfirmed backlog / **real issues** for tasks to be implemented and tracked in the repo
 - Put **acceptance criteria** in the ticket `body` (as a `- [ ]` checklist) — GitHub Projects v2 has no separate AC field → use a body checklist
 - Write **reusable scripts** that prefetch field/option IDs and loop to create items (because of the 2-step flow) → share them in the repo so the team need not memorize GraphQL
