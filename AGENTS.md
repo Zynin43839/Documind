@@ -37,3 +37,13 @@
 
 ## FRONTEND STACK
 - use React
+
+## TOOL EXECUTION DISCIPLINE (anti-loop protocol)
+
+- **Never repeat the same intention text without executing**: if you are about to do something, EXECUTE the tool call immediately. Writing "I will do X" more than once without running a tool = LOOP = forbidden.
+- **One tool call per step**: run a command -> read its output -> decide the next step -> run the next command. Do not chain several not-yet-run intentions into one message.
+- **No filler preambles**: keep narration minimal before a tool call (1 short line max, or none).
+- **If a command fails (e.g. git push rejected)**: fix based on the actual error output, then re-run once. Never repeat the same failing command verbatim more than twice.
+- **Prefer combining dependent simple steps in a single shell command** (e.g. `git add X; git commit -m "..."`) when they must run sequentially, so progress happens in one shot.
+- **Batch independent tool calls in parallel**; keep dependent calls sequential and wait for results.
+- If you notice yourself emitting the same sentence repeatedly in one response, STOP and make the tool call right away instead.
