@@ -6,6 +6,21 @@
 - Never write AGENTS.md or SKILL.md content in Thai (or any other language).
 - Note: this rule is about those files themselves; communicating with the user in Thai is still fine.
 
+## PROJECT CONTEXT (Required Reading — machine-local)
+
+Read these before starting ANY work, in order. Read only what the task needs — do not read all files every time.
+
+1. `README.md` — project overview, tech stack, API surface, architecture.
+2. `Mydoc/decisions/DECISION-RECORD-2026-09-02.md` — the single source of truth for all locked decisions (D1–D9, V3–V9, research/deploy). **Must read before changing any plan.**
+3. `Mydoc/BACKLOG-PLAN-2026-09-02.md` — ticket plan T1–T16 (work status / sprint). Read when planning or doing tracked work.
+4. `docs/` plans relevant to the task only: `frontend-plan.md`, `database-plan.md`, `crawler-quality-plan.md`, `github-projects-guide.md`, `index-css-guide.md`.
+5. `Mydoc/graphify/GRAPH_REPORT.md` — knowledge map (optional; use `graphify query "..."` to explore relationships when needed).
+
+Notes:
+- These files are machine-local (under `Mydoc/`, gitignored) — they exist only on this machine, not on GitHub.
+- Decision record is authoritative: if docs/ conflicts with it, the decision record wins — flag the mismatch instead of silently following the doc.
+- Keep context small: for a frontend task read frontend-plan + README; for a backend/db task read database-plan + decision record; do not read the whole repo.
+
 ## RESPONSES
 
 - Keep responses concise and to the point - unless the user asks otherwise
