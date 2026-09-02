@@ -1,5 +1,11 @@
 # CRITICAL RULES - MUST FOLLOW
 
+## LANGUAGE OF AGENTS.md (Important)
+
+- This file and any AGENTS.md MUST be written in English only.
+- Never write AGENTS.md content in Thai (or any other language).
+- Note: this rule is about the AGENTS.md file itself; communicating with the user in Thai is still fine.
+
 ## RESPONSES
 
 - Keep responses concise and to the point - unless the user asks otherwise
